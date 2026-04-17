@@ -572,21 +572,23 @@ function renderIndent(container, depth, endDepths){
     col.className = "indent-col";
     col.style.left = `${(d - 1) * colWidth}px`;
 
-    const v = document.createElement("div");
-    v.className = "indent-v";
+    const mark = document.createElement("div");
+    mark.style.position = "absolute";
+    mark.style.left = "2px";
+    mark.style.top = "6px";
+    mark.style.width = `${colWidth}px`;
+    mark.style.height = "34px";
+    mark.style.display = "flex";
+    mark.style.alignItems = "center";
+    mark.style.justifyContent = "center";
+    mark.style.fontSize = "26px";
+    mark.style.fontWeight = "700";
+    mark.style.lineHeight = "1";
+    mark.style.color = getCss("--guide");
+    mark.style.fontFamily = "monospace";
+    mark.textContent = endDepths.includes(d) ? "└" : "│";
 
-    const isEnd = endDepths.includes(d);
-    if(isEnd){
-      v.style.bottom = "14px";
-    }
-    col.appendChild(v);
-
-    if(isEnd){
-      const l = document.createElement("div");
-      l.className = "indent-l";
-      col.appendChild(l);
-    }
-
+    col.appendChild(mark);
     container.appendChild(col);
   }
 }
