@@ -172,18 +172,17 @@
     animation:sortedFlash 1s ease-in-out 2;
   }
 
-  .card.sync-hozon,
   .card.sync-hozon{
     animation:syncPulse 1.05s ease-in-out infinite;
     z-index:4;
   }
 
-  .card.sync-hozon{
+  .card.in-hozon.sync-hozon{
     background:#fff6d8 !important;
     border-color:#df9b16 !important;
   }
 
-  .card.sync-hozon{
+  .card.is-compared.sync-hozon{
     background:#e5f5e5 !important;
     border-color:#3b8f3b !important;
   }
@@ -416,24 +415,6 @@
     width:28px;
   }
 
-  .indent-v{
-    position:absolute;
-    left:12px;
-    top:2px;
-    bottom:2px;
-    width:0;
-    border-left:3px solid var(--guide);
-  }
-
-  .indent-l{
-    position:absolute;
-    left:12px;
-    bottom:2px;
-    width:18px;
-    height:0;
-    border-bottom:3px solid var(--guide);
-  }
-
   .code-text{
     font-size:17px;
     line-height:1.2;
@@ -460,7 +441,7 @@
 </head>
 <body>
   <div class="header">
-    <h1>挿入ソート (添字は1から))</h1>
+    <h1>挿入ソート (添字は1から)</h1>
     <div id="hint-text">読み込み中...</div>
     <div class="controls">
       <button id="backBtn" onclick="undo()">一つ戻る</button>
@@ -909,8 +890,8 @@ function updateHozonPosition(){
   hozonContainer.style.left = `${Math.max(left, 18)}px`;
 }
 
-function getDropArea(hozon){
-  let node = hozon;
+function getDropArea(target){
+  let node = target;
   while(node && !node.classList?.contains("cell") && node.id !== "hozon-slot"){
     node = node.parentElement;
   }
@@ -918,17 +899,17 @@ function getDropArea(hozon){
 }
 
 function drag(ev){
-  ev.dataTransfer.setData("text/plain", ev.hozon.id);
+  ev.dataTransfer.setData("text/plain", ev.target.id);
 }
 
 function allowDrop(ev){
   ev.preventDefault();
-  const area = getDropArea(ev.hozon);
+  const area = getDropArea(ev.target);
   if(area) area.classList.add("drop-hover");
 }
 
 function clearHover(ev){
-  const area = getDropArea(ev.hozon);
+  const area = getDropArea(ev.target);
   if(area) area.classList.remove("drop-hover");
 }
 
@@ -944,7 +925,7 @@ function triggerSortedFlash(endIndex){
 function drop(ev){
   ev.preventDefault();
 
-  const hozonArea = getDropArea(ev.hozon);
+  const hozonArea = getDropArea(ev.target);
   if(!hozonArea) return;
   hozonArea.classList.remove("drop-hover");
 
