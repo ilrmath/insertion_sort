@@ -173,7 +173,7 @@
   }
 
   .card.sync-hozon,
-  .card.sync-target{
+  .card.sync-hozon{
     animation:syncPulse 1.05s ease-in-out infinite;
     z-index:4;
   }
@@ -183,7 +183,7 @@
     border-color:#df9b16 !important;
   }
 
-  .card.sync-target{
+  .card.sync-hozon{
     background:#e5f5e5 !important;
     border-color:#3b8f3b !important;
   }
@@ -460,7 +460,7 @@
 </head>
 <body>
   <div class="header">
-    <h1>挿入ソート(添字は1から)</h1>
+    <h1>挿入ソート (添字は1から))</h1>
     <div id="hint-text">読み込み中...</div>
     <div class="controls">
       <button id="backBtn" onclick="undo()">一つ戻る</button>
@@ -501,15 +501,15 @@
 const pseudocode = [
   { no: 1, depth: 0, text: '', endDepths: [] },
   { no: 2, depth: 0, text: 'i を 2 から要素数( list ) まで 1 ずつ増やしながら', endDepths: [] },
-  { no: 3, depth: 1, text: 'target ← list [ i ]', endDepths: [] },
+  { no: 3, depth: 1, text: 'hozon ← list [ i ]', endDepths: [] },
   { no: 4, depth: 1, text: 'j を i − 1 から 1 まで 1 ずつ減らしながら，次を繰り返す', endDepths: [] },
-  { no: 5, depth: 2, text: 'もし, list [ j ] < target ならば', endDepths: [] },
-  { no: 6, depth: 3, text: 'list [ j+1 ] ← target', endDepths: [] },
+  { no: 5, depth: 2, text: 'もし, list [ j ] < hozon ならば', endDepths: [] },
+  { no: 6, depth: 3, text: 'list [ j+1 ] ← hozon', endDepths: [] },
   { no: 7, depth: 3, text: 'ループを離脱する☆', endDepths: [] },
   { no: 8, depth: 2, text: 'そうでなければ', endDepths: [] },
   { no: 9, depth: 3, text: 'list [ j+1 ] ← list [ j ]', endDepths: [] },
   { no: 10, depth: 3, text: 'もし j が 1 と等しければ', endDepths: [] },
-  { no: 11, depth: 4, text: 'list [ 1 ] ← target', endDepths: [1,2,3,4] },
+  { no: 11, depth: 4, text: 'list [ 1 ] ← hozon', endDepths: [1,2,3,4] },
   { no: 12, depth: 0, text: 'list を表示する', endDepths: [] }
 ];
 
@@ -528,7 +528,7 @@ function initCodePanel(){
   const listText = (state.initialList && state.initialList.length)
     ? state.initialList.join(', ')
     : '8, -3, 2, 1, 7';
-  pseudocode[0].text = `target ← 0, list ← [ ${listText} ]`;
+  pseudocode[0].text = `hozon ← 0, list ← [ ${listText} ]`;
 
   const box = document.getElementById("code-lines");
   box.innerHTML = "";
@@ -691,7 +691,7 @@ function render(){
         (state.phase === "INSERT" && ((state.j >= 0 && idx === state.j + 1) || (state.j < 0 && idx === 0)))
       );
 
-    if(shouldBlink) classes.push("sync-target");
+    if(shouldBlink) classes.push("sync-hozon");
 
     card.className = classes.join(" ");
     card.textContent = val;
@@ -773,17 +773,17 @@ function updateUI(){
 
   if(state.phase === "COMPARE_SHIFT"){
     showRange();
-    const target = state.hozon;
+    const hozon = state.hozon;
     const compareVal = state.list[state.j];
 
     if(state.j >= 0 && state.list[state.j] < state.hozon){
       hint.innerHTML =
-        `【挿入】list[${state.j + 1}] の値 <b>${compareVal}</b> は hozon の <b>${target}</b> より小さいです。` +
+        `【挿入】list[${state.j + 1}] の値 <b>${compareVal}</b> は hozon の <b>${hozon}</b> より小さいです。` +
         `<br>右上の <b>↑添字j+1</b> の場所に hozon を入れてください。`;
     } else if(state.j >= 0){
       hint.innerHTML =
         `【比較】添字j = ${state.j + 1} のカードの下に hozon を置いています。` +
-        `<br><b>${compareVal}</b> は <b>${target}</b> より小さくないので、list[${state.j + 1}] を右の list[${state.j + 2}] へずらしてください。`;
+        `<br><b>${compareVal}</b> は <b>${hozon}</b> より小さくないので、list[${state.j + 1}] を右の list[${state.j + 2}] へずらしてください。`;
     } else {
       state.phase = "INSERT";
       render();
@@ -800,7 +800,7 @@ function updateUI(){
         `<br>右上の <b>↑添字j+1</b> の場所に、hozon の <b>${state.hozon}</b> を入れてください。`;
     } else {
       hint.innerHTML =
-        `【挿入】j が 1 まで来たので、次は <b>list[1] ← target</b> を行います。` +
+        `【挿入】j が 1 まで来たので、次は <b>list[1] ← hozon</b> を行います。` +
         `<br>hozon はいちばん左のカードの下に残してあります。その真上の <b>list[1]</b> に入れてください。`;
     }
   }
@@ -909,8 +909,8 @@ function updateHozonPosition(){
   hozonContainer.style.left = `${Math.max(left, 18)}px`;
 }
 
-function getDropArea(target){
-  let node = target;
+function getDropArea(hozon){
+  let node = hozon;
   while(node && !node.classList?.contains("cell") && node.id !== "hozon-slot"){
     node = node.parentElement;
   }
@@ -918,17 +918,17 @@ function getDropArea(target){
 }
 
 function drag(ev){
-  ev.dataTransfer.setData("text/plain", ev.target.id);
+  ev.dataTransfer.setData("text/plain", ev.hozon.id);
 }
 
 function allowDrop(ev){
   ev.preventDefault();
-  const area = getDropArea(ev.target);
+  const area = getDropArea(ev.hozon);
   if(area) area.classList.add("drop-hover");
 }
 
 function clearHover(ev){
-  const area = getDropArea(ev.target);
+  const area = getDropArea(ev.hozon);
   if(area) area.classList.remove("drop-hover");
 }
 
@@ -944,9 +944,9 @@ function triggerSortedFlash(endIndex){
 function drop(ev){
   ev.preventDefault();
 
-  const targetArea = getDropArea(ev.target);
-  if(!targetArea) return;
-  targetArea.classList.remove("drop-hover");
+  const hozonArea = getDropArea(ev.hozon);
+  if(!hozonArea) return;
+  hozonArea.classList.remove("drop-hover");
 
   const data = ev.dataTransfer.getData("text/plain");
   const draggedEl = document.getElementById(data);
@@ -954,8 +954,8 @@ function drop(ev){
 
   const fromHozon = data === "card-hozon";
   const fromListIdx = fromHozon ? null : parseInt(data.replace("card-list-", ""), 10);
-  const toHozon = targetArea.id === "hozon-slot";
-  const toListIdx = toHozon ? null : parseInt(targetArea.dataset.idx, 10);
+  const toHozon = hozonArea.id === "hozon-slot";
+  const toListIdx = toHozon ? null : parseInt(hozonArea.dataset.idx, 10);
 
   if(state.phase === "SAVE" && toHozon && fromListIdx === state.i){
     saveHistory();
